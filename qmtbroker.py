@@ -19,6 +19,7 @@ class QMTBroker(metaclass=MetaQMTBroker):
 
     def start(self):
         super(QMTBroker, self).start()
+        self.qmt.start(broker=self)
 
     def stop(self):
         super(QMTBroker, self).stop()

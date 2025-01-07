@@ -28,6 +28,7 @@ class QMTData(metaclass=MetaQMTData):
         '''Starts the QMT connecction and gets the real contract and
         contractdetails if it exists'''
         super(QMTData, self).start()
+        self.qlive = self.qmt.start(data=self)
 
     def stop(self):
         '''Stops and tells the store to stop'''

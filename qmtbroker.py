@@ -12,10 +12,11 @@ class MetaQMTBroker(BrokerBase.__class__):
         qmtstore.QMTStore.BrokerCls = cls
 
 
-class QMTBroker(metaclass=MetaQMTBroker):
+class QMTBroker(BrokerBase, metaclass=MetaQMTBroker):
     def __init__(self, **kwargs):
         super(QMTBroker, self).__init__()
         self.qmt = qmtstore.QMTStore(**kwargs)
+        print("QMTBroker init")
 
     def start(self):
         super(QMTBroker, self).start()
@@ -35,4 +36,10 @@ class QMTBroker(metaclass=MetaQMTBroker):
             size, price=None, plimit=None,
             exectype=None, valid=None, tradeid=0,
             **kwargs):
+        pass
+
+    def getcash(self):
+        pass
+
+    def getvalue(self):
         pass

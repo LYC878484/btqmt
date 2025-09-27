@@ -18,7 +18,7 @@ def runstrategy():
     #hisdata = qmt_data.history_data(stock="600406.SH", period="1d", start="20240101", end="20240401")
     #print(hisdata)
 
-    seq = qmt_data.subscribe_live_data(stock="600406.SH", period="1m", start="20240101", end="20240401")
+    seq = qmt_data.subscribe_live_data(stock="512730.SH", period="1d", start="20240101", end="20240401")
 
     #cerebro.adddata(data0)
 
@@ -28,3 +28,7 @@ def runstrategy():
 
 if __name__ == '__main__':
     runstrategy()
+'''
+    stock_zh_a_hist_df = qmtdata
+    data = bt.feeds.PandasData(dataname=stock_zh_a_hist_df, fromdate=start_date, todate=end_date)
+'''

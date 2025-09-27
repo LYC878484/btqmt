@@ -24,3 +24,29 @@ date
 2024-10-15  2024-10-15  10.59  10.26  10.77  10.25   360652
 2024-10-16  2024-10-16  10.02  11.29  11.29  10.01  1015724
 2024-10-17  2024-10-17  11.33  11.36  11.62  11.02  1182073
+
+
+def on_quote_data(data):
+    """单只股票数据回调"""
+    print("\n收到单只股票数据:")
+    print(data)
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.48, 'volume': 1439, 'amount': 1651109.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.47, 'volume': 1607, 'amount': 1843906.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.48, 'volume': 1637, 'amount': 1878338.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.48, 'volume': 1724, 'amount': 1978205.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.47, 'volume': 1757, 'amount': 2016056.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.47, 'volume': 1789, 'amount': 2052760.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+收到单只股票数据:
+{'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.47, 'volume': 1899, 'amount': 2178956.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}

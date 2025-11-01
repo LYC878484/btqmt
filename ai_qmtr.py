@@ -11,7 +11,7 @@ import time
 
 class QMTStore(bt.Store):
     params = (
-        ('account_id', '8886991198'),
+        ('account_id', 'xxxxxx'),
         ('path', r'D:\国金证券QMT交易端\bin.x64/../userdata_mini'),
     )
 

@@ -50,3 +50,50 @@ def on_quote_data(data):
 
 收到单只股票数据:
 {'000001.SZ': [{'time': 1737960660000, 'open': 11.48, 'high': 11.48, 'low': 11.47, 'close': 11.47, 'volume': 1899, 'amount': 2178956.0, 'settlementPrice': 0.0, 'openInterest': 13, 'dr': 1.0, 'totaldr': 98.9329302783749, 'preClose': 0.0, 'suspendFlag': -282068784}]}
+
+下单流程：
+Backtrader Strategy
+     │
+     ├─ self.buy() / self.sell()
+     │
+     ▼
+ QMTBroker.makeorder() → QMTOrder
+     │
+     ▼
+ QMTBroker.submit() → QMTStore.place_order()
+     │
+     ▼
+ XtQuantTrader (迅投交易端)
+     │
+     └─ 回调事件 → QMTTraderCallback → QMTBroker.notify()
+
+撤单流程：
+Strategy.cancel(order)
+     │
+     ▼
+ QMTBroker.cancel(order)
+     │
+     ▼
+ QMTStore.cancel_order(order.qmt_order_id)
+     │
+     ▼
+ XtQuantTrader.cancel_order_stock()
+
+添加notify后的调用时序：
+Strategy.buy()
+   │
+   ▼
+QMTBroker.buy() → makeorder() → submit()
+   │
+   │ (QMT 下单 API 调用)
+   ▼
+QMT 下单成功（返回 order_id）
+   │
+   ▼
+QMT 回调 on_stock_order() 触发
+   │
+   ├─ 更新 bt_order 状态（accept/reject/cancel）
+   └─ 调用 broker.notify(order)
+        │
+        ▼
+   Backtrader 调用 strategy.notify_order()

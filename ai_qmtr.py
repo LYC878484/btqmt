@@ -32,10 +32,10 @@ class QMTStore(bt.Store):
         self.xt_trader.start()
         ret = self.xt_trader.connect()
         if ret != 0:
-            raise Exception(f'QMT连接失败，返回码 {ret}')
+            raise Exception(f'QMT连接失败, 返回码 {ret}')
         ret = self.xt_trader.subscribe(self.account)
         if ret != 0:
-            raise Exception(f'QMT订阅失败，返回码 {ret}')
+            raise Exception(f'QMT订阅失败, 返回码 {ret}')
         self.connected = True
         self.update_account_info()
 

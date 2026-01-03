@@ -17,8 +17,7 @@ class TestStrategy(bt.Strategy):
         # Keep a reference to the "close" line in the data[0] dataseries
         self.dataclose = self.datas[0].close
         self.executed = False
-        print(f"test buy 股票代码{self.data._dataname}")
-        
+        print(f"debug buy 股票代码{self.data._dataname}")
 
     def notify_order(self, order):
         if order.status == order.Completed:
@@ -27,16 +26,16 @@ class TestStrategy(bt.Strategy):
     def next(self):
         # 此处完成实际买卖
         self.log('Close, %.2f' % self.dataclose[0])
-        if not self.executed:
-            self.buy(size=100, exectype=bt.Order.Limit, price=1.5)
-            self.executed = True
+        # if not self.executed:
+        #     self.buy(size=100, exectype=bt.Order.Limit, price=1.5)
+        #     self.executed = True
         # if self.executed==True
         #     self.cancel(order)
 
 def runstrategy():
     cerebro = bt.Cerebro()
 
-    qmt_store = qmtstore.QMTStore()
+    qmt_store = qmtstore.QMTStore(account_id='8886991198', path=r'D:\国金证券QMT交易端\bin.x64/../userdata_mini')
 
     # 增加一个策略
     cerebro.addstrategy(TestStrategy)
@@ -95,7 +94,3 @@ def runstrategy():
 
 if __name__ == '__main__':
     runstrategy()
-'''
-    stock_zh_a_hist_df = qmtdata
-    data = bt.feeds.PandasData(dataname=stock_zh_a_hist_df, fromdate=start_date, todate=end_date)
-'''

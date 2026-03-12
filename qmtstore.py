@@ -20,17 +20,13 @@ class QMTTraderCallback(XtQuantTraderCallback):
         self.store.connected = False
         self.store.put_notification("connection", "disconnected")
 
-    def on_stock_order(self, qmt_order):
-        """
-        委托回报推送
-        :param order: XtOrder对象
-        :return:
-        """
-        self.store.put_notification("order", qmt_order)
-        self.store.order_events.put(qmt_order)
+    def on_stock_order(self, order):
+        self.store.put_notification("order", order)
+        self.store.order_events.put(order)
 
     def on_stock_trade(self, trade):
         self.store.put_notification("trade", trade)
+        self.store.trade_events.put(trade)
 
     def on_order_error(self, order_error):
         self.store.put_notification("order_error", order_error)
@@ -78,6 +74,7 @@ class QMTStore(metaclass=MetaSingleton):
         self.broker = None
         self.connected = False
         self.order_events = queue.Queue()
+        self.trade_events = queue.Queue()
 
         self.session_id = int(time.time())
         self.xt_trader = XtQuantTrader(self.p.path, self.session_id)

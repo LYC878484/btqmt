@@ -27,6 +27,35 @@ class QMTOrderStateManager:
     def register(self, qmt_order_id, bt_order):
         self._orders[qmt_order_id] = bt_order
 
+    def handle_trade(self, trade):
+        order_id = getattr(trade, "order_id", None) or getattr(trade, "order_sysid", None)
+        order = self._orders.get(order_id)
+        if order is None:
+            return None
+
+        price = (
+            getattr(trade, "price", None)
+            or getattr(trade, "trade_price", None)
+            or getattr(trade, "match_price", None)
+        )
+        size = (
+            getattr(trade, "volume", None)
+            or getattr(trade, "qty", None)
+            or getattr(trade, "quantity", None)
+            or getattr(trade, "match_qty", None)
+        )
+        if price is None or size is None:
+            return order
+
+        comm = getattr(trade, "commission", None) or getattr(trade, "fee", 0) or 0
+
+        # accumulate execution info
+        order.executed.size += size
+        order.executed.price = price  # last price; BT will keep latest
+        order.executed.value += price * size
+        order.executed.comm += comm
+        return order
+
     def handle_order(self, qmt_order):
         order = self._orders.get(qmt_order.order_id)
         if order is None:
@@ -107,6 +136,15 @@ class QMTBroker(BrokerBase, metaclass=MetaQMTBroker):
             except queue.Empty:
                 break
             bt_order = self.order_state_mgr.handle_order(qmt_order)
+            if bt_order is not None:
+                self.notify(bt_order)
+
+        while True:
+            try:
+                trade = self.qmtstore.trade_events.get_nowait()
+            except queue.Empty:
+                break
+            bt_order = self.order_state_mgr.handle_trade(trade)
             if bt_order is not None:
                 self.notify(bt_order)
 

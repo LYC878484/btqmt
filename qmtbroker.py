@@ -54,7 +54,10 @@ class QMTOrderStateManager:
         order = self._orders.get(order_id)
         if order is None:
             return None
-        order.addinfo(cancel_error=getattr(cancel_error, "error_id", None))
+        order.addinfo(
+            cancel_error_msg=getattr(cancel_error, "error_msg", None),
+            cancel_error_id=getattr(cancel_error, "error_id", None),
+        )
         return order
 
     def handle_order_error(self, order_error):
@@ -62,6 +65,10 @@ class QMTOrderStateManager:
         order = self._orders.get(order_id)
         if order is None:
             return None
+        order.addinfo(
+            order_error_msg=getattr(order_error, "error_msg", None),
+            order_error_id=getattr(order_error, "error_id", None),
+        )
         order.reject()
         self._finalize(order_id)
         return order

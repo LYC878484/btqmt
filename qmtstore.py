@@ -30,9 +30,11 @@ class QMTTraderCallback(XtQuantTraderCallback):
 
     def on_order_error(self, order_error):
         self.store.put_notification("order_error", order_error)
+        self.store.order_error_events.put(order_error)
 
     def on_cancel_error(self, cancel_error):
         self.store.put_notification("cancel_error", cancel_error)
+        self.store.cancel_error_events.put(cancel_error)
 
 
 class MetaSingleton(MetaParams):
@@ -75,6 +77,8 @@ class QMTStore(metaclass=MetaSingleton):
         self.connected = False
         self.order_events = queue.Queue()
         self.trade_events = queue.Queue()
+        self.cancel_error_events = queue.Queue()
+        self.order_error_events = queue.Queue()
 
         self.session_id = int(time.time())
         self.xt_trader = XtQuantTrader(self.p.path, self.session_id)

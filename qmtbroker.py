@@ -56,6 +56,23 @@ class QMTOrderStateManager:
         order.executed.comm += comm
         return order
 
+    def handle_cancel_error(self, cancel_error):
+        order_id = getattr(cancel_error, "order_id", None) or getattr(cancel_error, "order_sysid", None)
+        order = self._orders.get(order_id)
+        if order is None:
+            return None
+        order.addinfo(cancel_error=getattr(cancel_error, "error_id", None))
+        return order
+
+    def handle_order_error(self, order_error):
+        order_id = getattr(order_error, "order_id", None) or getattr(order_error, "order_sysid", None)
+        order = self._orders.get(order_id)
+        if order is None:
+            return None
+        order.reject()
+        self._finalize(order_id)
+        return order
+
     def handle_order(self, qmt_order):
         order = self._orders.get(qmt_order.order_id)
         if order is None:
@@ -145,6 +162,24 @@ class QMTBroker(BrokerBase, metaclass=MetaQMTBroker):
             except queue.Empty:
                 break
             bt_order = self.order_state_mgr.handle_trade(trade)
+            if bt_order is not None:
+                self.notify(bt_order)
+
+        while True:
+            try:
+                cancel_error = self.qmtstore.cancel_error_events.get_nowait()
+            except queue.Empty:
+                break
+            bt_order = self.order_state_mgr.handle_cancel_error(cancel_error)
+            if bt_order is not None:
+                self.notify(bt_order)
+
+        while True:
+            try:
+                order_error = self.qmtstore.order_error_events.get_nowait()
+            except queue.Empty:
+                break
+            bt_order = self.order_state_mgr.handle_order_error(order_error)
             if bt_order is not None:
                 self.notify(bt_order)
 

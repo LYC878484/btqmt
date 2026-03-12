@@ -33,17 +33,10 @@ class QMTOrderStateManager:
         if order is None:
             return None
 
-        price = (
-            getattr(trade, "price", None)
-            or getattr(trade, "trade_price", None)
-            or getattr(trade, "match_price", None)
-        )
-        size = (
-            getattr(trade, "volume", None)
-            or getattr(trade, "qty", None)
-            or getattr(trade, "quantity", None)
-            or getattr(trade, "match_qty", None)
-        )
+        price = getattr(trade, "trade_price", None)
+        size = getattr(trade, "traded_volume", None)
+        value = getattr(trade, "traded_amount", None)
+
         if price is None or size is None:
             return order
 
@@ -52,7 +45,7 @@ class QMTOrderStateManager:
         # accumulate execution info
         order.executed.size += size
         order.executed.price = price  # last price; BT will keep latest
-        order.executed.value += price * size
+        order.executed.value += value
         order.executed.comm += comm
         return order
 

@@ -8,29 +8,39 @@ import qmtdata
 from xtquant import xtconstant
 
 class TestStrategy(bt.Strategy):
+    params = dict(target_price=1.50, stake=100)
+
     def log(self, txt, dt=None):
-        ''' Logging function fot this strategy'''
         dt = dt or self.datas[0].datetime.date(0)
-        print('%s, %s' % (dt.isoformat(), txt))
+        print(f"{dt.isoformat()}, {txt}")
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
         self.dataclose = self.datas[0].close
-        self.executed = False
-        print(f"debug buy 股票代码{self.data._dataname}")
+        self.order = None
+        print(f"debug buy 股票代码 {self.data._dataname}")
 
     def notify_order(self, order):
-        if order.status == order.Completed:
-            print('订单成交')
+        status = order.getstatusname()
+        if order.status in [order.Submitted, order.Accepted]:
+            self.log(f"订单提交 ref:{order.ref} status:{status}")
+        elif order.status == order.Partial:
+            self.log(f"部分成交 ref:{order.ref} size:{order.executed.size} price:{order.executed.price}")
+        elif order.status == order.Completed:
+            self.log(f"成交完毕 ref:{order.ref} size:{order.executed.size} price:{order.executed.price}")
+            self.order = None
+        elif order.status in [order.Canceled, order.Rejected, order.Expired]:
+            self.log(f"订单结束 ref:{order.ref} status:{status} info:{order.info}")
+            self.order = None
 
     def next(self):
-        # 此处完成实际买卖
         self.log('Close, %.2f' % self.dataclose[0])
-        # if not self.executed:
-        #     self.buy(size=100, exectype=bt.Order.Limit, price=1.5)
-        #     self.executed = True
-        # if self.executed==True
-        #     self.cancel(order)
+        if self.order:
+            return
+        if not self.position and self.dataclose[0] <= self.p.target_price:
+            self.log(f"触发买入 size:{self.p.stake} price:{self.p.target_price}")
+            self.order = self.buy(size=self.p.stake,
+                                  exectype=bt.Order.Limit,
+                                  price=self.p.target_price)
 
 def runstrategy():
     cerebro = bt.Cerebro()
@@ -41,18 +51,16 @@ def runstrategy():
     cerebro.addstrategy(TestStrategy)
 
     # 获取并且处理数据
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol="000810", period="daily", start_date="20221001", end_date='20241017', adjust="").iloc[:, :7]
-    del stock_zh_a_hist_df['股票代码']
-    # 处理字段命名，以符合 Backtrader 的要求
-    stock_zh_a_hist_df.columns = [
-        'date',
-        'open',
-        'close',
-        'high',
-        'low',
-        'volume',
-    ]
-    # 把 date 作为日期索引，以符合 Backtrader 的要求
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(
+        symbol="000810",
+        period="daily",
+        start_date="20221001",
+        end_date="20241017",
+        adjust=""
+    ).iloc[:, :7]
+    stock_zh_a_hist_df.drop(columns=['股票代码'], inplace=True)
+    stock_zh_a_hist_df.columns = ['date', 'open', 'close', 'high', 'low', 'volume']
+    stock_zh_a_hist_df['openinterest'] = 0
     stock_zh_a_hist_df.index = pd.to_datetime(stock_zh_a_hist_df['date'])
     # 打印数据调试使用
     # print(stock_zh_a_hist_df)

@@ -9,19 +9,11 @@ def runstrategy():
 
     qmt_store = qmtstore.QMTStore()
     qmt_broker = qmtbroker.QMTBroker()
-
-
-    #stock = '600000.SH'
-    qmt_data = qmtdata.QMTData()
     cerebro.setbroker(qmt_broker)
 
-    #hisdata = qmt_data.history_data(stock="600406.SH", period="1d", start="20240101", end="20240401")
-    #print(hisdata)
-
-    seq = qmt_data.subscribe_live_data(stock="512730.SH", period="1d", start="20240101", end="20240401")
-
-    #cerebro.adddata(data0)
-
+    # live daily feed via miniQMT/xtdata
+    qmt_data = qmtdata.QMTData(stock="512730.SH", period="1d")
+    cerebro.adddata(qmt_data)
 
     cerebro.run()
 
